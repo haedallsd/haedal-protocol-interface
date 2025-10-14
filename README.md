@@ -7,7 +7,7 @@ The Haedal Protocol is deployed to **mainnet**, and its package id and Staking o
 
 ```
 original packageId: '0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d',
-latest upgraded packageId: '0x3f45767c1aa95b25422f675800f02d8a813ec793a00b60667d071a77ba7178a2'
+latest upgraded packageId: '0x19e6ea7f5ced4f090e20da794cc80349a03e638940ddb95155a4e301f5f4967c'
 Staking Id: '0x47b224762220393057ebf4f70501b6e657c3e56684737568439a04f80849b2ca',
 ```
 Haedal website[https://www.haedal.xyz/stake] .
@@ -18,9 +18,9 @@ You need these two ids to integrate Haedal to your project.
 
 The Haedal Protocol is deployed to **testnet**, and its package id and Staking object id are below:
 ```
-original stakingId: '0x6e384d2da5b040b27f973155e25bbe4beb0ad5ca8ee0a36e20dff356094c9fc0'
-latest upgraded packageId: '0x9dac9c5770e5f930d2223ff68782958701acfaee9337e8d8363978ce7670dffb'
-packageId: '0xac2afb455cbcdc2ff1a2e9bbb8aa4ccb4506a544b08c740886892a5cdf92f472'
+original packageId: '0x771b0ab909f629d1b8ef68a62ba8e2074d8726804ac6b7e91b23cdc855117683'
+latest upgraded packageId: '0x0a6ff2b974e08b65649d334c38db5ca046b78b4a5d892087740b9cdb3eb08e47'
+stakingId: '0xb399662ac5d3973256a1e8629a913336449a2baa16847502ce6bdbf4a0003f07'
 ```
 Haedal testnet website[https://testnet3.haedal.xyz/stake] .
 
