@@ -11,6 +11,7 @@ module haedal::staking {
     use sui::clock::{Self, Clock};
     use sui::table::{Self, Table};
     use sui::vec_map::{Self, VecMap};
+    use sui::dynamic_field;
 
     use sui_system::staking_pool::{Self, StakedSui};
     use sui_system::sui_system::{Self, SuiSystemState};
@@ -23,21 +24,25 @@ module haedal::staking {
 
     friend haedal::manage;
     friend haedal::operate;
+    friend haedal::breaker;
+    friend haedal::minorsign;
+    friend haedal::robot;
 
     const MIN_STAKING_THRESHOLD: u64 = 1_000_000_000; // 1 SUI
     const DEFAULT_DEPOSIT_FEE_RATE: u64 = 0;
-    const DEFAULT_REWARD_FEE_RATE: u64 = 100;
+    const DEFAULT_REWARD_FEE_RATE: u64 = 100_0000;
     const DEFAULT_VALIDATOR_REWARD_FEE_RATE: u64 = 0;
-    const DEFAULT_SERVICE_FEE_RATE: u64 = 90;
-    const FEE_DENOMINATOR: u64 = 1000;
+    const DEFAULT_SERVICE_FEE_RATE: u64 = 90_0000;
+    const FEE_DENOMINATOR: u64 = 1000_0000;
     const EPOCH_FIRST_TWENTY_HOURS_MILI: u64 = 20*3600*1000;
     const EPOCH_DURATION: u64 = 24*3600*1000;
     const DEFAULT_VALIDATOR_COUNT: u64 = 10;
     const MAX_U64: u64 = 0xFFFFFFFFFFFFFFFF; // 18446744073709551615
-    const USER_SELECTED_VALIDATORS: vector<u8> = b"user_selected_validators";
     const EXCHANGE_RATE_PRECISION: u64 = 1_000_000;
+    const PAUSE_CLAIM_KEY: vector<u8> = b"pause_claim_key";
 
-    const PROGRAM_VERSION: u64 = 0;
+    // Starting from 0, manually increment by 1 each time the program is upgraded.
+    const PROGRAM_VERSION: u64 = 5;
 
     const EDataNotMatchProgram: u64 = 1;
     const EStakedSuiRewardsNotMatched: u64 = 2;
@@ -48,13 +53,14 @@ module haedal::staking {
     const EUnstakeNotEnoughSui: u64 = 7;
     const EUnstakeExceedMaxSuiAmount: u64 = 8;
     const EUnstakeInstantNoServiceFee: u64 = 9;
-    const EUnstakeNotEnoughStakedSui: u64 = 10;
     const EUnstakeNotZeroStSui: u64 = 11;
     const EStakePause: u64 = 12;
     const EUnstakePause: u64 = 13;
-    const EReservedForClaim: u64 = 14;
-    const ENoMinStakingThreshhold: u64 = 15;
     const EUnstakeNeedAmountIsNotZero: u64 = 16;
+    const EClaimPause: u64 = 17;
+    const EValidatorCountNotMatch: u64 = 18;
+    const EValidatorNotFound: u64 = 19;
+    const EInjectRewardsTooLow:u64 = 20;
 
 
     struct Staking has key {
@@ -177,7 +183,16 @@ module haedal::staking {
         new: u64,
     }
 
+    struct RewardsInjected has copy, drop {
+        owner: address,
+        sui_amount: u64,
+    }
+
     public(friend) fun initialize(cap: TreasuryCap<HASUI>, ctx: &mut TxContext) {
+        abort 0
+    }
+
+    public fun inject_rewards(_wrapper: &mut SuiSystemState, staking: &mut Staking, input: Coin<SUI>, ctx: &mut TxContext) {
         abort 0
     }
 
@@ -193,10 +208,16 @@ module haedal::staking {
         abort 0
     }
 
-    public fun request_unstake_instant(staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
+    // The function is no longer supported.
+    // public fun request_unstake_instant(staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
+    //     abort 0
+    // }
+
+    public fun request_unstake_instant_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
         abort 0
     }
-    public fun request_unstake_instant_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
+
+    public fun request_unstake_instant_coin(wrapper: &mut SuiSystemState, staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext): Coin<SUI> {
         abort 0
     }
 
@@ -204,25 +225,26 @@ module haedal::staking {
         abort 0
     }
 
-    fun get_epoch_claim(staking: &mut Staking, epoch: u64): &mut EpochClaim {
-        abort 0
-    }
+    // The function is no longer supported.
+    // public fun claim(_staking: &mut Staking, _ticket: UnstakeTicket, _ctx: &mut TxContext) {
+    //     abort 0
+    //     //transfer::public_transfer(claim_coin(staking, ticket, ctx), tx_context::sender(ctx))
+    // }
 
-    public fun claim(staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) {
-        abort 0
-    }
+    // The function is no longer supported.
+    // public fun claim_coin(_staking: &mut Staking, _ticket: UnstakeTicket, _ctx: &mut TxContext): Coin<SUI> {
+    //     abort 0
+    // }
+
     public fun claim_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) {
         abort 0
     }
 
-    public fun claim_coin(staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext): Coin<SUI> {
-        abort 0
-    }
     public fun claim_coin_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext): Coin<SUI> {
         abort 0
     }
 
-    fun claim_epoch_record(staking: &mut Staking, epoch: u64, sui_amount: u64) {
+    fun withdraw_sui(wrapper: &mut SuiSystemState, staking: &mut Staking, need_amount :u64, is_instant:bool, ctx: &mut TxContext): Balance<SUI> {
         abort 0
     }
 
@@ -243,20 +265,25 @@ module haedal::staking {
         abort 0
     }
 
-    public(friend) fun update_total_rewards_onchain(staking: &mut Staking, wrapper: &mut SuiSystemState, ctx: &mut TxContext) {  
+    public(friend) fun update_total_rewards_onchain(staking: &mut Staking, wrapper: &mut SuiSystemState, ctx: &mut TxContext) {
         abort 0
     }
 
+    public(friend) fun update_validator_rewards(staking: &mut Staking, wrapper: &mut SuiSystemState, validator: address, ctx: &mut TxContext) {
+        abort 0
+    }
+
+    /// Unstake the `StakedSui` objects, and get the SUI back to the `claim_sui_vault`.
     public(friend) fun do_unstake_onchain_by_validator(
         staking: &mut Staking,
         wrapper: &mut SuiSystemState,
-        validators: vector<address>,
+        _validators: vector<address>,
         ctx: &mut TxContext,
     ) {
         abort 0
     }
 
-    fun unstake_inactive_validators(staking: &mut Staking, wrapper: &mut SuiSystemState, ctx: &mut TxContext) {
+    public(friend) fun unstake_inactive_validators(staking: &mut Staking, wrapper: &mut SuiSystemState, ctx: &mut TxContext) {
         abort 0
     }
 
@@ -266,6 +293,20 @@ module haedal::staking {
         validators: vector<address>,
         ctx: &mut TxContext,
     ) {
+        abort 0
+    }
+
+    public(friend) fun unstake_from_validator(
+        staking: &mut Staking,
+        wrapper: &mut SuiSystemState,
+        validator: address,
+        amount: u64,
+        ctx: &mut TxContext,
+    ) {
+        abort 0
+    }
+
+    public(friend) fun sort_validators(staking: &mut Staking, validators: vector<address>) {
         abort 0
     }
 
@@ -290,8 +331,8 @@ module haedal::staking {
     fun is_active_validator(validator: address, active_validators: &vector<address>): bool {
         abort 0
     }
-    
-    fun calculate_validator_pool_rewards_increase(wrapper: &mut SuiSystemState, pool: &mut PoolInfo, current_epoch: u64): u64 { 
+
+    fun calculate_validator_pool_rewards_increase(wrapper: &mut SuiSystemState, pool: &mut PoolInfo, current_epoch: u64): u64 {
         abort 0
     }
 
@@ -299,21 +340,13 @@ module haedal::staking {
         abort 0
     }
 
-    fun approve_claim_and_fee(
-        staking: &mut Staking,
-        unstaked_bal: Balance<SUI>,
-        epoch: u64,
-        ctx: &mut TxContext,
-    ) {
-        abort 0
-    }
 
     fun do_validator_unstake(
-        staking: &mut Staking, 
-        wrapper: &mut SuiSystemState, 
+        staking: &mut Staking,
+        wrapper: &mut SuiSystemState,
         unstaked_bal: &mut Balance<SUI>,
-        validator: address, 
-        need_amount: u64, 
+        validator: address,
+        need_amount: u64,
         current_epoch: u64,
         ctx: &mut TxContext,
     ): u64 {
@@ -328,15 +361,12 @@ module haedal::staking {
         abort 0
     }
 
-    public(friend) fun do_before_unstake(
-        staking: &mut Staking,
-        approve: bool,
-        ctx: &mut TxContext,
-    ): (u64, u64, u64) {
-        abort 0
-    }
-    
-    public(friend) fun collect_rewards_fee(staking: &mut Staking, account: address, ctx: &mut TxContext) {
+    // The function is no longer supported.
+    // public(friend) fun collect_rewards_fee(staking: &mut Staking, account: address, ctx: &mut TxContext) {
+    //     abort 0
+    // }
+
+    public(friend) fun collect_rewards_fee_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, account: address, ctx: &mut TxContext) {
         abort 0
     }
 
@@ -365,6 +395,10 @@ module haedal::staking {
     }
 
     public fun get_version(staking: &Staking): u64 {
+        abort 0
+    }
+
+    public fun get_config(staking: &Staking): &StakingConfig {
         abort 0
     }
 
@@ -412,6 +446,14 @@ module haedal::staking {
         abort 0
     }
 
+    public(friend) fun toggle_claim(staking: &mut Staking, status: bool) {
+        abort 0
+    }
+
+    public fun query_pause_claim(staking: &Staking): bool {
+        abort 0
+    }
+
     public fun get_staked_validators(staking: &Staking): vector<address> {
         abort 0
     }
@@ -433,6 +475,37 @@ module haedal::staking {
     public fun get_validator_staked_info(staking: &Staking): vector<ValidatorStakedInfo> {
         abort 0
     }
+
+    public fun get_all_current_validator_staked_info(staking: &Staking, wrapper: &mut SuiSystemState, ctx: &TxContext): vector<ValidatorStakedInfo> {
+        abort 0
+    }
+
+    public fun get_current_validator_staked_info(staking: &Staking, wrapper: &mut SuiSystemState, validator: address, ctx: &TxContext): ValidatorStakedInfo {
+        abort 0
+    }
+
+    struct ValidatorStakedInfoV2 has store {
+        validator: address,
+        total_staked: u64,
+        rewards: u64,
+        staked_sui_count: u64,
+
+        pool_id: ID,
+        exchange_rates_unexisted_epoches: vector<u64>,
+        stake_activation_epoches: vector<u64>,
+    }
+    public fun get_current_validator_staked_info_detail_vector(staking: &Staking, wrapper: &mut SuiSystemState, recalc: bool, ctx: &TxContext): vector<ValidatorStakedInfoV2> {
+        abort 0
+    }
+
+    public fun destroy_ValidatorStakedInfoV2(vsi: ValidatorStakedInfoV2) {
+        abort 0
+    }
+
+    public fun get_current_validator_staked_info_detail_single(staking: &Staking, wrapper: &mut SuiSystemState, validator: address, recalc: bool, ctx: &TxContext): ValidatorStakedInfoV2 {
+        abort 0
+    }
+
 
     struct UserSelectedStaking has drop {
         validator: address,

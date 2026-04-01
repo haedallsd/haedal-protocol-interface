@@ -28,6 +28,10 @@ module haedal::vault {
         abort 0
     }
 
+    public(friend) fun withdraw_max<T>(vault: &mut Vault<T>, amount: u64) : (Balance<T>, u64) {
+        abort 0
+    }
+
     public(friend) fun withdraw_all<T>(vault: &mut Vault<T>) : Balance<T> {
         abort 0
     }

@@ -18,20 +18,24 @@ module haedal::interface {
         abort 0
     }
 
-    public entry fun request_unstake_instant(staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
-        abort 0
-    }
+    // The function is no longer supported.
+    // public entry fun request_unstake_instant(staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext) {
+    //     abort 0
+    // }
+
     public entry fun request_unstake_instant_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, input: Coin<HASUI>, ctx: &mut TxContext){
         abort 0
     }
-
+    
     public entry fun request_unstake_delay(staking: &mut Staking, clock: &Clock, input: Coin<HASUI>, ctx: &mut TxContext) {
         abort 0
     }
 
-    public entry fun claim(staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) {
-        abort 0
-    }
+    // The function is no longer supported.
+    // public entry fun claim(_staking: &mut Staking, _ticket: UnstakeTicket, _ctx: &mut TxContext) {
+    //     abort 0
+    // }
+
     public entry fun claim_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) {
         abort 0
     }

@@ -1,3 +1,4 @@
+/// codes reserved for onchain calculate
 module haedal::util {
 
     use sui::object::{ID};
@@ -11,6 +12,10 @@ module haedal::util {
     }
 
     public fun pool_token_exchange_rate_at_epoch(exchange_rates: &Table<u64, PoolTokenExchangeRate>, epoch: u64): PoolTokenExchangeRate {
+        abort 0
+    }
+
+    public fun pool_token_exchange_rate_at_epoch2(exchange_rates: &Table<u64, PoolTokenExchangeRate>, epoch: u64, activation_epoch: u64): PoolTokenExchangeRate {
         abort 0
     }
 

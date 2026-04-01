@@ -7,7 +7,7 @@ The Haedal Protocol is deployed to **mainnet**, and its package id and Staking o
 
 ```
 original packageId: '0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d',
-latest upgraded packageId: '0x19e6ea7f5ced4f090e20da794cc80349a03e638940ddb95155a4e301f5f4967c'
+latest upgraded packageId: '0x126e4cfb051cad744706df590ec399e8c02b6feae195c35b8b496280d5442a62'
 Staking Id: '0x47b224762220393057ebf4f70501b6e657c3e56684737568439a04f80849b2ca',
 ```
 Haedal website[https://www.haedal.xyz/stake] .
@@ -78,12 +78,12 @@ If you want to integrate the stake operation with your operations in one txb, we
 
 
 ## unstake
-### 1 call `interface::request_unstake_delay` to get a `UnstakeTicket`, and call `interface::claim` to get SUI
+### 1 call `interface::request_unstake_delay` to get a `UnstakeTicket`, and call `interface::claim_v2` to get SUI
 
 ```
 public entry fun request_unstake_delay(staking: &mut Staking, clock: &Clock, input: Coin<HASUI>, ctx: &mut TxContext) {}
 
-public entry fun claim(staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) { }
+public entry fun claim_v2(wrapper: &mut SuiSystemState, staking: &mut Staking, ticket: UnstakeTicket, ctx: &mut TxContext) { }
 ```
 
 This method is recommended, after calling it in epoch n, you will get a `UnstakeTicket`, and just wait to epoch+1 or epoch+2 begining, you can call claim it. The wait time depends on the time you call `request_unstake_delay`, if it's at the end of this epoch(right now the last 4 hours), you will wait to n+2 to claim, otherwise n+1.

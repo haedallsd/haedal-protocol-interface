@@ -4,8 +4,9 @@ module haedal::config {
 
     friend haedal::manage;
     friend haedal::staking;
+    friend haedal::minorsign;
 
-    const FEE_DENOMINATOR: u64 = 1000;
+    const FEE_DENOMINATOR: u64 = 1000_0000;
 
     const EConfigUnchanged: u64 = 1;
     const EFeeInvalid: u64 = 2;
